@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import telran.java52.book.dao.AuthorRepository;
 import telran.java52.book.dao.BookRepository;
 import telran.java52.book.dao.PublisherRepository;
+import telran.java52.book.dto.AuthorDto;
 import telran.java52.book.dto.BookDto;
 import telran.java52.book.dto.exeption.EntityNotFoundException;
 import telran.java52.book.model.Author;
@@ -51,6 +52,57 @@ public class BookServiceImpl implements BookService {
 		Book book = bookRepository.findById(isbn).orElseThrow(EntityNotFoundException::new);
 		
 		return modelMapper.map(book, BookDto.class);
+	}
+
+	@Transactional
+	@Override
+	public BookDto removeByIsbn(String isbn) {
+		Book book = bookRepository.findById(isbn).orElseThrow(EntityNotFoundException::new);
+		bookRepository.delete(book);
+		return modelMapper.map(book, BookDto.class);
+	}
+
+	@Transactional
+	@Override
+	public BookDto updateBookByIsbn(String isbn, String title) {
+		Book book = bookRepository.findById(isbn).orElseThrow(EntityNotFoundException::new);
+		book.setTitle(title);
+		return modelMapper.map(book, BookDto.class);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public BookDto[] findBooksByAuthor(String author) {
+		return bookRepository.findBooksByAuthor(author).map(b->modelMapper.map(b, BookDto.class)).toArray(BookDto[]::new);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public BookDto[] findBooksByPublisher(String publisher) {
+		return bookRepository.findBooksByPublisher(publisher).map(b->modelMapper.map(b, BookDto.class)).toArray(BookDto[]::new);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public AuthorDto[] findBookAuthors(String isbn) {
+	    return bookRepository.findBookAuthors(isbn)
+	            .map(a -> modelMapper.map(a, AuthorDto.class))
+	            .toArray(AuthorDto[]::new);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public String[] findPublishersByAuthor(String author) {
+		return bookRepository.findPublishersByAuthor(author)
+	            .toArray(String[]::new);
+	}
+
+	@Transactional
+	@Override
+	public AuthorDto removeAuthor(String authorId) {
+		Author author = authorRepository.findById(authorId).orElseThrow(EntityNotFoundException::new);
+//		authorRepository.delete(author);
+		return modelMapper.map(author, AuthorDto.class);
 	}
 
 }

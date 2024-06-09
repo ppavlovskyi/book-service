@@ -20,8 +20,7 @@ public class Publisher implements Serializable {
 	private static final long serialVersionUID = 4328523889665632423L;
 	@Id
 	String publisherName;
-	
-	
+
 	@Override
 	public String toString() {
 		return publisherName;
